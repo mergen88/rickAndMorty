@@ -1,15 +1,16 @@
-import React, { FC, ReactElement, useEffect, useState } from 'react';
-import { StyleSheet, Text, View, SafeAreaView, StatusBar, Button, FlatList, Image, Alert } from 'react-native';
-import * as Progress from 'react-native-progress';
+import React, { ReactElement, useEffect, useState } from 'react';
+import { StyleSheet, View, FlatList, Alert, TouchableOpacity } from 'react-native';
 import { EvilIcons } from '@expo/vector-icons';
 import PersonEntity from '../../domain/entities/PersonEntity';
 import { blocState, PersonCubit } from '../bloc/personListCubit/PersonListCubit';
 import { PersonEmpty, PersonError, PersonLoaded, PersonLoading } from '../bloc/personListCubit/PersonListState';
+import { PersonItem } from '../components/PersonItem';
 
 
 export function MainCharacters(props: any) {
 
     useEffect(()=> {
+      navigation = props.navigation
       props.navigation.setOptions({
         title: 'Characters', headerTitleAlign: 'center', headerRight: () => {
           return <EvilIcons name="search" size={24} color="black" onPress={() => {
@@ -19,14 +20,15 @@ export function MainCharacters(props: any) {
       })
      
     })
-        return (<PersonList/>);
-      
-    
+    return (<PersonList/>);
 }
+
+var navigation: any
 var persons = Array<PersonEntity>()
 var isLoading = false
 
-const PersonList: FC = (): ReactElement => {
+
+const PersonList = (): ReactElement => {
   
   const [data, { loadPersons }] = blocState.useBloc(PersonCubit);
   var isFirstFetch = false
@@ -53,37 +55,18 @@ const PersonList: FC = (): ReactElement => {
       onEndReachedThreshold={0.7}
       data={persons} 
       renderItem={({item, index}) => (
-        <View style={styles.listContainer}>
-          <View style={styles.personItemContainer}>
-          <Image style={styles.image} source={{uri: item.image }} ></Image>
-          <View style={styles.personItemInfoContainer}>
-            <Text style={styles.pesonName}>{item.name}</Text> 
-            <View style={styles.featureContainer}>
-              <Text style={styles.personFeatureText}>{'Status:'}</Text> 
-              <Text style={styles.personFeatureValue}>{item.status}</Text> 
-            </View>  
-            <View style={styles.featureContainer}>
-              <Text style={styles.personFeatureText}>{'Species:'}</Text> 
-              <Text style={styles.personFeatureValue}>{item.species}</Text> 
-            </View> 
-            <View style={styles.featureContainer}>
-              <Text style={styles.personFeatureText}>{'Last known location:'}</Text> 
-              <Text style={styles.personFeatureValue}>{item.location?.name}</Text> 
-            </View> 
-            <View style={styles.featureContainer}>
-              <Text style={styles.personFeatureText}>{'Origin:'}</Text> 
-              <Text style={styles.personFeatureValue}>{item.origin?.name}</Text> 
-            </View> 
-          </View>
-        </View>
-        {index == persons.length-1 && isLoading ?  
-        <View style={styles.itemLoader}>
-          <Progress.Circle size={50} indeterminate={true}/>
-        </View> : 
-        <View></View>}
-        </View>
+        <TouchableOpacity onPress={ () => {
+          navigateToDetail(item);
+        }}>
+          <PersonItem isLoading={index == persons.length-1 } item={item}/>
+        </TouchableOpacity>
       )} />
   </View> 
+
+
+  function navigateToDetail(person: PersonEntity) {
+    navigation.navigate('detail', {person: person})
+  }
 }
 
 

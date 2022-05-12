@@ -1,8 +1,7 @@
 import { BlacReact, Cubit } from "blac";
 import { PersonError, PersonLoaded, PersonLoading, PersonState } from "./PersonListState";
-import { getAllPerson } from '../../../domain/useCases/GetAllPerson'
+import { getAllPerson, PagePersonParams } from '../../../domain/useCases/GetAllPerson'
 import PersonEntity from "../../../domain/entities/PersonEntity";
-import { PagePersonParams } from '../../../domain/useCases/GetAllPerson';
 import { Failure } from "../../../core/error/Failure";
 
 export class PersonCubit extends Cubit<PersonState> {
